@@ -7,13 +7,13 @@ using UnityEngine.InputSystem;
 
 public class PlantSystem : MonoBehaviour
 {
-    public static PlantSystem? Instance { private set; get; }
+    public static PlantSystem Instance { private set; get; }
 
     [SerializeField]
     [InspectorName("Slots of unit count")]
     private uint slots_count = 5;
 
-    private GameObject?[] _units;
+    private GameObject[] _units;
     private int _choosen_slot = -1;
 
     private void Awake()
@@ -96,10 +96,6 @@ public class PlantSystem : MonoBehaviour
                     break;
                 }
             }
-        }
-
-        if (!added)
-        {
         }
     }
 

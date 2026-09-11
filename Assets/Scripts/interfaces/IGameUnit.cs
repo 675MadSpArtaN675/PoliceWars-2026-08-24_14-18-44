@@ -2,10 +2,10 @@ using System.Collections;
 
 using UnityEngine;
 
-public interface IGameUnit
+public interface IGameUnit : ITeamable
 {
     void Attack(int damage, Vector2 _direction);
+    IEnumerator Wait(float duration);
     Vector2[] CheckEnemy();
-    Team getTeam();
     void Reset();
 }

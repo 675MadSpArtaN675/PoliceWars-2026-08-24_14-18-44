@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6679096620749581452}
   - component: {fileID: 766113211764675996}
-  - component: {fileID: 4408929092640083580}
-  m_Layer: 0
+  - component: {fileID: 3240461642144881485}
+  m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!61 &4408929092640083580
+--- !u!61 &3240461642144881485
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,9 +148,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1726341119268996173}
+  - component: {fileID: 2234328728268605731}
   - component: {fileID: 7072283422579781236}
-  m_Layer: 0
-  m_Name: TestEnemy
+  - component: {fileID: 6657351386394331003}
+  - component: {fileID: 2057504529441590198}
+  m_Layer: 7
+  m_Name: TestTerrorist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,6 +175,33 @@ Transform:
   - {fileID: 6679096620749581452}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &2234328728268605731
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7519551407209018175}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!114 &7072283422579781236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,3 +216,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mover
   Speed: 0
   Direction: {x: 1, y: 0}
+--- !u!114 &6657351386394331003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7519551407209018175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1959c046e79d17f41ba11c8afeea7afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagableEntity
+  _health: 100
+  _is_invulerable: 0
+--- !u!114 &2057504529441590198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7519551407209018175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b22ebf28355ba4087de6cfb7548a72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleBrain
+  _team: 2
+  _unit_data: {fileID: 11400000, guid: 5883e9ea62c59a646b785c25ce649c0f, type: 2}

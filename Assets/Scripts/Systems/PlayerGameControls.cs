@@ -5,10 +5,15 @@ using UnityEngine.InputSystem;
 public class PlayerGameControls : MonoBehaviour
 {
     private InputSystem_Actions _input;
-    public static PlayerGameControls? Instance { private set; get; }
+    public static PlayerGameControls Instance { private set; get; }
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
         _input = new InputSystem_Actions();
     }
 

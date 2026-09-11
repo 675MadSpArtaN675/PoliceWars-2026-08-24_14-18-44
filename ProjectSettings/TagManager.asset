@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -11,12 +11,12 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - BankLayer
+  - AttackLine_1
+  - AttackLine_2
+  - AttackLine_3
+  - AttackLine_4
+  - AttackLine_5
   - 
   - 
   - 
@@ -41,3 +41,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Bank
+    uniqueID: 152489131
+    locked: 0
+  - name: Line_1
+    uniqueID: 3105001253
+    locked: 0
+  - name: Line_2
+    uniqueID: 2245751953
+    locked: 0
+  - name: Line_3
+    uniqueID: 1822272079
+    locked: 0
+  - name: Line_4
+    uniqueID: 3002114489
+    locked: 0
+  - name: Line_5
+    uniqueID: 2582780411
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  m_MigratedRenderPipelines: []

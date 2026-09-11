@@ -1,13 +1,31 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "TestUnit", menuName = "Units/TestUnit")]
+[CreateAssetMenu(fileName = "UnitSettings", menuName = "Units/StandardUnitSettings")]
 public class UnitSettings : ScriptableObject
 {
-    [InspectorName("Enemy check timeout")]
-    public float check_timeout = 0.5f;
+    private Dictionary<int, float> subattacks_timeout;
+
+    [InspectorName("Health")]
+    public int health = 100;
+
+    [InspectorName("Damage")]
+    public int damage = 5;
+
+    [InspectorName("Attack Type")]
+    public TypeOfAttack attack_type;
+
+    [InspectorName("Start timeout")]
+    public float start_timeout = 4;
+
+    [InspectorName("Timeout between full attacks")]
+    public float attack_timeout = 2;
+
+    [InspectorName("Timeout after subattack number N")]
+    public List<SubattackTimeout> subattack_timeout = new List<SubattackTimeout>();
 
     [InspectorName("Distance to attack")]
     public float distance = 1;
@@ -15,15 +33,40 @@ public class UnitSettings : ScriptableObject
     [InspectorName("Directions where check enemies")]
     public List<Vector2> check_directions = new List<Vector2>();
 
-    [InspectorName("Timeout between attacks")]
-    public float attack_timeout = 2;
-
-    [InspectorName("Damage")]
-    public int damage = 5;
+    [InspectorName("Is stop moving when unit attacking (If unit is movable)")]
+    public bool is_stop_when_attacking = false;
 
     private void Awake()
     {
-        Debug.Log($"Directions {check_directions}");
+        if (subattacks_timeout == null && subattack_timeout.Count > 0)
+        {
+            subattacks_timeout = subattack_timeout
+                .Select((SubattackTimeout timeout_par) => (timeout_par.AttackNum, timeout_par.WaitInSeconds))
+                .ToDictionary(pair => pair.Item1, pair => pair.Item2);
+        }
+        else
+        {
+            subattacks_timeout = new Dictionary<int, float>();
+        }
+
+        Debug.Log($"Directions: {check_directions}");
         check_directions = check_directions.Select((Vector2 not_normalized_vec) => UtilityGameFuncs.ClampVector(not_normalized_vec, -1, 1)).ToList();
     }
+
+    public float GetSubAttackTimeout(int subattack_num)
+    {
+        if (subattacks_timeout?.ContainsKey(subattack_num) ?? false)
+        {
+            return subattacks_timeout[subattack_num];
+        }
+
+        return 0.0f;
+    }
+}
+
+[Serializable]
+public struct SubattackTimeout
+{
+    public int AttackNum;
+    public float WaitInSeconds;
 }
