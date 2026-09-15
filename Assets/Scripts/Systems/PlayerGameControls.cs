@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +22,8 @@ public class PlayerGameControls : MonoBehaviour
 
         _input.Player.SelectFirstSlot.started += OnSelectFirstSlot;
         _input.Player.SelectLastSlot.started += OnSelectLastSlot;
+
+        _input.Player.DeleteMode.started += OnToggleDeleteMode;
     }
 
     private void OnDisable()
@@ -39,5 +40,11 @@ public class PlayerGameControls : MonoBehaviour
     private void OnSelectLastSlot(InputAction.CallbackContext context)
     {
         PlantSystem.Instance.ChooseLastSlot();
+    }
+
+    private void OnToggleDeleteMode(InputAction.CallbackContext context)
+    {
+        PlantSystem.Instance.ToggleDeleteMode();
+        Debug.Log($"Toggle delete mode. {PlantSystem.Instance.IsDeleteMode}");
     }
 }

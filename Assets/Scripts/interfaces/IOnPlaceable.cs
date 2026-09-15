@@ -1,4 +1,4 @@
-using UnityEngine;
-
 public interface IOnPlaceable
-{ }
+{
+    void PlaceUnit();
+}

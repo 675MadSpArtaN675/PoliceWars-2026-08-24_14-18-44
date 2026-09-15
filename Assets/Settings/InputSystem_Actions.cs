@@ -131,6 +131,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""DeleteMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""7710e6b3-e5ff-46da-bf33-a0ed8c98b242"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -175,6 +185,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""SelectLastSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b914b46d-e27f-4a1a-9196-77f11442ee43"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DeleteMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -776,6 +797,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_SelectNextUnit = m_Player.FindAction("SelectNextUnit", throwIfNotFound: true);
         m_Player_SelectPreviousUnit = m_Player.FindAction("SelectPreviousUnit", throwIfNotFound: true);
         m_Player_SelectLastSlot = m_Player.FindAction("SelectLastSlot", throwIfNotFound: true);
+        m_Player_DeleteMode = m_Player.FindAction("DeleteMode", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -873,6 +895,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SelectNextUnit;
     private readonly InputAction m_Player_SelectPreviousUnit;
     private readonly InputAction m_Player_SelectLastSlot;
+    private readonly InputAction m_Player_DeleteMode;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -900,6 +923,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/SelectLastSlot".
         /// </summary>
         public InputAction @SelectLastSlot => m_Wrapper.m_Player_SelectLastSlot;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/DeleteMode".
+        /// </summary>
+        public InputAction @DeleteMode => m_Wrapper.m_Player_DeleteMode;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -938,6 +965,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @SelectLastSlot.started += instance.OnSelectLastSlot;
             @SelectLastSlot.performed += instance.OnSelectLastSlot;
             @SelectLastSlot.canceled += instance.OnSelectLastSlot;
+            @DeleteMode.started += instance.OnDeleteMode;
+            @DeleteMode.performed += instance.OnDeleteMode;
+            @DeleteMode.canceled += instance.OnDeleteMode;
         }
 
         /// <summary>
@@ -961,6 +991,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @SelectLastSlot.started -= instance.OnSelectLastSlot;
             @SelectLastSlot.performed -= instance.OnSelectLastSlot;
             @SelectLastSlot.canceled -= instance.OnSelectLastSlot;
+            @DeleteMode.started -= instance.OnDeleteMode;
+            @DeleteMode.performed -= instance.OnDeleteMode;
+            @DeleteMode.canceled -= instance.OnDeleteMode;
         }
 
         /// <summary>
@@ -1289,6 +1322,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectLastSlot(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DeleteMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDeleteMode(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

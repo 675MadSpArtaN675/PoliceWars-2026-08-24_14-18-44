@@ -25,6 +25,7 @@ public abstract class AbstractAttack
     protected Transform _unit_transformation;
     protected Mover _mover;
     protected Team _unit_team;
+    protected PlantSystem.UnitAdditionalSettings _additional_settings;
     protected UnitSettings _unit_data;
 
     public AbstractAttack(UnitSettings settings, GameObject obj)
@@ -63,6 +64,16 @@ public abstract class AbstractAttack
     public void DisableFoundEntityCache()
     {
         _cached_entities = null;
+    }
+
+    public void SetLayerSettingsObj(PlantSystem.UnitAdditionalSettings _uas)
+    {
+        _additional_settings = _uas;
+    }
+
+    public PlantSystem.UnitAdditionalSettings GetLayerSettingsObj()
+    {
+        return _additional_settings;
     }
 
     protected void AddEntityToCache(GameObject value)

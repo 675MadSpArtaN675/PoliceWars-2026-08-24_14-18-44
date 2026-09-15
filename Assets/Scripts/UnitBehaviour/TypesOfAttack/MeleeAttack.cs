@@ -28,7 +28,7 @@ public class MeleeAttack : AbstractAttack
 
         if (_nearest_obj != null) {
             Debug.Log($"Nearest obj {_nearest_obj.name}");
-            DamageSystem.Instance.SetDamage(_unit_game_obj, _nearest_obj, damage);
+            DamageSystem.Instance.SetDamage(_unit_game_obj, _nearest_obj, DamageSystem.DamageType.Hit, damage);
 
             ClearCache();
         }
@@ -48,16 +48,18 @@ public class MeleeAttack : AbstractAttack
                 Debug.DrawRay(direction_of_ray, _direction * _unit_data.distance, Color.green, 0.5f);
 
                 RaycastHit2D[] scan_hit = Physics2D
-                        .RaycastAll(direction_of_ray, _direction * _unit_data.distance, _unit_data.distance)
-                        .Where((RaycastHit2D _hit) => _hit.distance <= _unit_data.distance)
+                        .RaycastAll(direction_of_ray, _direction * _unit_data.distance, _unit_data.distance, 1 << _additional_settings.current_collide_id, 0, 4)
                         .Where((RaycastHit2D _hit) => IsValidEnemyTeam(in _hit))
+                        .Where((RaycastHit2D _hit) => _hit.distance <= _unit_data.distance)
                         .ToArray();
 
                 if (scan_hit.Count() > 0)
                 {
                     GameObject[] obj = scan_hit.Select((_obj) => _obj.collider.gameObject)
                         .SelectMany((_obj) => _obj.GetComponentsInParent<IDamagable>())
-                        .Select((_obj) => ((MonoBehaviour) _obj).gameObject).ToArray();
+                        .Select((_obj) => ((MonoBehaviour) _obj).gameObject)
+                        .ToArray();
+
                     Debug.Log($"Enemy is found... Their count: {obj.Length}");
 
                     AddEntities(obj);

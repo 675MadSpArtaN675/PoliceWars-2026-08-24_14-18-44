@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,6 +15,12 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             _team = value;
         }
     }
+
+    [SerializeField]
+    private PlantSystem.CollideLineLayer colliderLayer = PlantSystem.CollideLineLayer.BankLayer;
+
+    public PlantSystem.CollideLineLayer ColliderLayer { get => colliderLayer; set => colliderLayer = value; }
+    public PlantSystem.UnitAdditionalSettings additionalSettings { get; set; }
 
     [SerializeField]
     private UnitSettings _unit_data;
@@ -40,7 +45,20 @@ public class BattleBrain : MonoBehaviour, IGameUnit
 
     private void Start()
     {
+        SetOptionsByColliderLayer(ColliderLayer);
         InitAttackType(_unit_data.attack_type);
+    }
+
+    public void SetOptionsByColliderLayer(PlantSystem.CollideLineLayer colliderLine)
+    {
+        additionalSettings = PlantSystem.UnitAdditionalSettings.CreateInstance(colliderLine);
+        PlantSystem.UnitAdditionalSettings.SetMasksForComponents(gameObject, additionalSettings);
+    }
+
+    public void SetOptions(PlantSystem.UnitAdditionalSettings colliderLine)
+    {
+        additionalSettings = colliderLine;
+        PlantSystem.UnitAdditionalSettings.SetMasksForComponents(gameObject, additionalSettings);
     }
 
     private void InitAttackType(TypeOfAttack _attack)
@@ -62,6 +80,8 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             default:
                 throw new KeyNotFoundException("Incorrect attack type");
         }
+
+        _attack_type.SetLayerSettingsObj(PlantSystem.UnitAdditionalSettings.CreateInstance(ColliderLayer));
     }
 
     private void FixedUpdate()
@@ -72,7 +92,7 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             _ready_to_actions = true;
         }
 
-        if (!_is_attacking) {
+        if (_ready_to_actions && !_is_attacking) {
             StartCoroutine(AttackCycle());
         }
     }
@@ -116,11 +136,9 @@ public class BattleBrain : MonoBehaviour, IGameUnit
         return _attack_type?.CheckEnemy(ref _is_enemy_found) ?? new Vector2[1];
     }
 
-    public void Reset()
+    public void ResetUnit()
     {
         _is_attacking = false;
         _is_enemy_found = false;
     }
-
-
 }

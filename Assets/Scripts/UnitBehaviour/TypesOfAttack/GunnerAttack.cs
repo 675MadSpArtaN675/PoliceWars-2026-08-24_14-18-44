@@ -16,6 +16,6 @@ public class GunnerAttack : MeleeAttack
         Vector3 unit_transform = _unit_transformation?.position ?? Vector3.zero;
         Debug.Log($"Attacking by direction: {_direction}. Position of unit: {unit_transform}");
 
-        ProjectileSystem.Instance.SpawnProjectile(new BulletSettings { Velocity = 10, Direction = _direction, OwnersTeam = _unit_team, SpawnPosition = new Vector2(unit_transform.x, unit_transform.y), Damage = damage});
+        ProjectileSystem.Instance.SpawnProjectile(new BulletSettings { Velocity = 10, Direction = _direction, OwnersTeam = _unit_team, AdditionalSettings = _additional_settings, SpawnPosition = new Vector2(unit_transform.x, unit_transform.y), Damage = damage});
     }
 }

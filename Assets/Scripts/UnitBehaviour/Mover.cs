@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -19,7 +18,7 @@ public class Mover : MonoBehaviour
     {
         _sprite_rend = GetComponentInChildren<SpriteRenderer>();
 
-        Reset();
+        ResetMove();
     }
 
     private void FixedUpdate()
@@ -29,21 +28,9 @@ public class Mover : MonoBehaviour
             float ray_distance = distance + _sprite_rend.size.x / 2;
             Vector2 speed = Direction * distance;
 
-            RaycastHit2D[] _hits = Physics2D.RaycastAll(_body.position, Direction, ray_distance);
-            RaycastHit2D? _hit = null;
+            RaycastHit2D? _hit = SearchNearestUnit(ray_distance);
 
-            if (_hits.Length > 0) {
-                foreach (RaycastHit2D hit in _hits)
-                {
-                    if (hit.distance > 0)
-                    {
-                        _hit = hit;
-                        break;
-                    }
-                }
-            }
-
-            if (_hit.HasValue && isCollidable(in _hit) && CanStop)
+            if (_hit.HasValue && isCollidable(_hit.Value.collider))
             {
                 Vector2 remains_distance_vec = _hit.Value.point - _body.position;
                 float remains_distance = Mathf.Abs(Vector2.Distance(_hit.Value.point, _body.position));
@@ -53,22 +40,50 @@ public class Mover : MonoBehaviour
                     _body.position += remains_distance_vec;
                 }
             }
-            else {
+            else
+            {
                 _body.position += speed;
             }
         }
     }
 
-    private bool isCollidable(in RaycastHit2D? _hit)
+
+    public bool IsStopped()
     {
-        if (_hit.HasValue && _hit.Value.collider != null)
+        return _speed == 0;
+    }
+
+    public bool IsNotMovable()
+    {
+        return Speed == 0 && _speed == 0;
+    }
+
+    protected RaycastHit2D? SearchNearestUnit(float ray_distance)
+    {
+        RaycastHit2D? _hit = null;
+        RaycastHit2D[] _hits = Physics2D.RaycastAll(_body.position, Direction, ray_distance)
+            .Where((RaycastHit2D _hit) => _hit.distance > 0 && GetComponentInParent<ITeamable>() != null)
+            .OrderBy((RaycastHit2D _hit) => _hit.distance)
+            .ToArray();
+
+        if (_hits.Length > 0)
         {
-            Debug.Log($"Name: {_hit.Value.collider.gameObject.GetComponentInParent<ITeamable>()?.Team.ToString() ?? "None"}");
-            ITeamable teamable_component = _hit.Value.collider.GetComponentInParent<ITeamable>();
+            _hit = _hits.First();
+        }
+
+        return _hit;
+    }
+
+    protected bool isCollidable(Collider2D _hit)
+    {
+        if (_hit != null)
+        {
+            Debug.Log($"Name: {_hit.gameObject.GetComponentInParent<ITeamable>()?.Team.ToString() ?? "None"}");
+            ITeamable teamable_component = _hit.GetComponentInParent<ITeamable>();
 
             if (teamable_component != null)
             {
-                List<Team> enemy_teams = DamageSystem.Instance.Relationships.GetEnemyTeams(_team);
+                List<Team> enemy_teams = DamageSystem.Instance?.Relationships.GetEnemyTeams(_team) ?? new List<Team>();
                 Debug.Log($"Team: {_team} Enemy teams: {enemy_teams}");
                 if (teamable_component is Projectile)
                 {
@@ -94,7 +109,7 @@ public class Mover : MonoBehaviour
         _speed = Speed;
     }
 
-    public void Reset()
+    public void ResetMove()
     {
         _body = GetComponentInChildren<Rigidbody2D>();
         _speed = Speed;

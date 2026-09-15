@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class DamagableEntity : MonoBehaviour, IDamagable
 {
-    public delegate void HealthChanged(DamagableEntity entity, int old_health, int new_health);
+    public DamageSystem.OnDamageAction OnDamage;
+    public DeathSystem.OnEntityDeathAction OnDeath;
+    public DamageSystem.HealthChanged OnHealthChanged;
 
-    public HealthChanged OnHealthChanged;
+    public DeathSystem.OnEntityDeathAction OnDeathActions { get => OnDeath; }
 
     [SerializeField]
     [InspectorName("Health")]
@@ -24,9 +26,7 @@ public class DamagableEntity : MonoBehaviour, IDamagable
         int old_health = _health;
         _health = value;
 
-        if (OnHealthChanged != null) {
-            OnHealthChanged.Invoke(this, old_health, _health);
-        }
+        OnHealthChanged?.Invoke(this, old_health, _health);
     }
 
     public void AddHealth(int value)
@@ -34,9 +34,7 @@ public class DamagableEntity : MonoBehaviour, IDamagable
         int old_health = _health;
         _health += value;
 
-        if (OnHealthChanged != null) {
-            OnHealthChanged.Invoke(this, old_health, _health);
-        }
+        OnHealthChanged?.Invoke(this, old_health, _health);
     }
 
     public void SubHealth(int value)
@@ -44,9 +42,14 @@ public class DamagableEntity : MonoBehaviour, IDamagable
         int old_health = _health;
         _health -= value;
 
-        if (OnHealthChanged != null) {
-            OnHealthChanged.Invoke(this, old_health, _health);
-        }
+        OnHealthChanged?.Invoke(this, old_health, _health);
+    }
+
+    public void GiveDamage(GameObject who_damager, DamageSystem.DamageType damage_type, int damage_count)
+    {
+        SubHealth(damage_count);
+
+        OnDamage?.Invoke(new DamageSystem.DamageNote(who_damager, gameObject, damage_type, damage_count));
     }
 
     public int GetHealth()

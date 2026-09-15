@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -7,7 +8,7 @@ public class ProjectileSystem : MonoBehaviour
     public static ProjectileSystem Instance { get; private set; }
 
     [InspectorName("Bullet")]
-    public GameObject bullet_prefab;
+    public GameObject bullet_prefab = null;
 
     private Queue<GameObject> _bullets_cache = new Queue<GameObject>();
 
@@ -16,6 +17,14 @@ public class ProjectileSystem : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+        }
+    }
+
+    private void Start()
+    {
+        if (bullet_prefab.GetComponent<Projectile>() == null)
+        {
+            throw new NullReferenceException("No projectile object in option");
         }
     }
 
@@ -32,9 +41,10 @@ public class ProjectileSystem : MonoBehaviour
         }
         else
         {
-            ProjectileConfigure(bullet_prefab, in settings);
 
-            Instantiate(bullet_prefab, bullet_prefab.transform.position, Quaternion.Euler(Vector3.zero));
+            GameObject _exited_object = Instantiate(bullet_prefab, bullet_prefab.transform.position, Quaternion.Euler(Vector3.zero));
+            ProjectileConfigure(_exited_object, in settings);
+            _exited_object.SetActive(true);
         }
     }
 
@@ -71,8 +81,9 @@ public class ProjectileSystem : MonoBehaviour
 
         _projectile_component.Damage = settings.Damage;
         _projectile_component.Team = settings.OwnersTeam;
+        _projectile_component.SetOptions(settings.AdditionalSettings);
 
-        mover.Reset();
-        _projectile_component.Reset();
+        mover.ResetMove();
+        _projectile_component.ResetUnit();
     }
 }

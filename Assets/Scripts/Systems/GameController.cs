@@ -11,12 +11,17 @@ public enum GameStatus
 
 public class GameController : MonoBehaviour
 {
-    public static GameController Instance { get; private set; }
-
     public delegate void onEventStart(GameStatus old_status, GameStatus new_status);
 
-    [InspectorName("Has prepare time")]
-    public bool has_prepare_time;
+    public static GameController Instance { get; private set; }
+
+    [SerializeField]
+    [InspectorName("Player's team")]
+    private Team _pl_team = Team.Policeman;
+    public Team PlayerTeam { get => _pl_team; set => _pl_team = value; }
+
+    [InspectorName("Prepare time")]
+    public uint PrepareTime;
 
     [InspectorName("On game status changed")]
     public onEventStart onStatusChange;
@@ -35,7 +40,7 @@ public class GameController : MonoBehaviour
     {
         GameStatus status = _status;
 
-        if (has_prepare_time) {
+        if (PrepareTime > 0) {
             _status = GameStatus.Preparing;
         }
         else {

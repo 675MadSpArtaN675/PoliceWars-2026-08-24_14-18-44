@@ -45,6 +45,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "DeleteMode",
+                    "type": "Button",
+                    "id": "7710e6b3-e5ff-46da-bf33-a0ed8c98b242",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -89,6 +99,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "SelectLastSlot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b914b46d-e27f-4a1a-9196-77f11442ee43",
+                    "path": "<Keyboard>/d",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DeleteMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

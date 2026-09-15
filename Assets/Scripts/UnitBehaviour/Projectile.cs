@@ -9,6 +9,9 @@ public class Projectile: MonoBehaviour, IGameUnit
     [SerializeField]
     private Team _team;
 
+    public PlantSystem.CollideLineLayer ColliderLayer { get; set; }
+    public PlantSystem.UnitAdditionalSettings additionalSettings { get; set; }
+
     public Team Team { get => _team; set => _team = value; }
 
     [InspectorName("Damage")]
@@ -31,6 +34,7 @@ public class Projectile: MonoBehaviour, IGameUnit
 
     private void Start()
     {
+        SetOptionsByColliderLayer(ColliderLayer);
         Debug.Log($"Bullet damage: {Damage}. Team: {Team}");
     }
 
@@ -41,10 +45,27 @@ public class Projectile: MonoBehaviour, IGameUnit
         }
     }
 
+    public void ReloadLayers()
+    {
+        PlantSystem.UnitAdditionalSettings.SetMasksForComponents(gameObject, additionalSettings);
+    }
+    public void SetOptionsByColliderLayer(PlantSystem.CollideLineLayer colliderLine)
+    {
+        additionalSettings = PlantSystem.UnitAdditionalSettings.CreateInstance(colliderLine);
+        ReloadLayers();
+    }
+
+    public void SetOptions(PlantSystem.UnitAdditionalSettings colliderLine)
+    {
+        additionalSettings = colliderLine;
+        ReloadLayers();
+    }
+
     public void Attack(int damage, Vector2 direction)
     {
         float distance = _sprite.size.x * 0.75f;
-        RaycastHit2D[] _check_dist = Physics2D.RaycastAll(_transform.position, direction, distance)
+        Debug.Log($"Bullet {additionalSettings.current_collide_id}");
+        RaycastHit2D[] _check_dist = Physics2D.RaycastAll(_transform.position, direction, distance, 1 << additionalSettings.current_collide_id, 0, 4)
             .Where((RaycastHit2D _hit) => _hit.distance > 0 && _hit.distance < distance && _hit.collider.GetComponentInParent<ITeamable>() != null)
             .OrderBy((RaycastHit2D _hit) => _hit.distance)
             .ToArray();
@@ -60,7 +81,7 @@ public class Projectile: MonoBehaviour, IGameUnit
                 Debug.Log($"Projectile team: {Team}. Enemy team: {teamable_component.Team}");
                 List<Team> enemy_teams = DamageSystem.Instance.Relationships.GetEnemyTeams(Team);
                 if (enemy_teams.Contains(teamable_component.Team)) {
-                    DamageSystem.Instance?.SetDamage(gameObject, _hit.collider.gameObject, damage);
+                    DamageSystem.Instance?.SetDamage(gameObject, _hit.collider.gameObject, DamageSystem.DamageType.Bullet, damage);
                     _mover_comp.MoveStop();
 
                     _is_attacked = true;
@@ -79,7 +100,7 @@ public class Projectile: MonoBehaviour, IGameUnit
         return null;
     }
 
-    public void Reset()
+    public void ResetUnit()
     {
         _is_attacked = false;
     }
