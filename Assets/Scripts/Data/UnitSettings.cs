@@ -7,6 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UnitSettings", menuName = "Units/StandardUnitSettings")]
 public class UnitSettings : ScriptableObject
 {
+    private List<TypeOfAttack> _types_who_need_projectile = new List<TypeOfAttack>() { TypeOfAttack.Ranged, TypeOfAttack.MeleeAndRanged };
     private Dictionary<int, float> subattacks_timeout;
 
     [InspectorName("Health")]
@@ -15,8 +16,14 @@ public class UnitSettings : ScriptableObject
     [InspectorName("Damage")]
     public int damage = 5;
 
+    [InspectorName("Move speed")]
+    public float speed = 0;
+
     [InspectorName("Attack Type")]
-    public TypeOfAttack attack_type;
+    public TypeOfAttack attack_type = TypeOfAttack.Empty;
+
+    [InspectorName("Projectile object")]
+    public GameObject projectile = null;
 
     [InspectorName("Start timeout")]
     public float start_timeout = 4;
@@ -51,6 +58,11 @@ public class UnitSettings : ScriptableObject
 
         Debug.Log($"Directions: {check_directions}");
         check_directions = check_directions.Select((Vector2 not_normalized_vec) => UtilityGameFuncs.ClampVector(not_normalized_vec, -1, 1)).ToList();
+
+        if (projectile?.GetComponent<Projectile>() == null && _types_who_need_projectile.Contains(attack_type))
+        {
+            throw new NullReferenceException("No projectile type");
+        }
     }
 
     public float GetSubAttackTimeout(int subattack_num)

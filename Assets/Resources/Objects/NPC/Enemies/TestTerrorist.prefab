@@ -103,9 +103,9 @@ GameObject:
   - component: {fileID: 1726341119268996173}
   - component: {fileID: 2234328728268605731}
   - component: {fileID: 1402501225949785805}
+  - component: {fileID: 2057504529441590198}
   - component: {fileID: 7072283422579781236}
   - component: {fileID: 6657351386394331003}
-  - component: {fileID: 2057504529441590198}
   m_Layer: 7
   m_Name: TestTerrorist
   m_TagString: Untagged
@@ -202,6 +202,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.28, y: 1.28}
   m_EdgeRadius: 0
+--- !u!114 &2057504529441590198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7519551407209018175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b22ebf28355ba4087de6cfb7548a72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleBrain
+  _team: 2
+  colliderLayer: 0
+  unit_data: {fileID: 11400000, guid: 5883e9ea62c59a646b785c25ce649c0f, type: 2}
 --- !u!114 &7072283422579781236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,18 +246,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DamagableEntity
   _health: 100
   _is_invulerable: 0
---- !u!114 &2057504529441590198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7519551407209018175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75b22ebf28355ba4087de6cfb7548a72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BattleBrain
-  _team: 2
-  collideLayer: 0
-  _unit_data: {fileID: 11400000, guid: 5883e9ea62c59a646b785c25ce649c0f, type: 2}

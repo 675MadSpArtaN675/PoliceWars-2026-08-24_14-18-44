@@ -22,7 +22,7 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
     [SerializeField]
     [InspectorName("On entered sprite")]
     private Sprite end_sprite;
-    public PlantSystem.SortingLayerLine layer = PlantSystem.SortingLayerLine.Bank;
+    public PlantSystem.SortingLayerLine sortingLayerForUnit = PlantSystem.SortingLayerLine.Bank;
 
     [InspectorName("Is blocked")]
     public bool IsBlocked;
@@ -57,8 +57,8 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
 
     public void PlaceUnit()
     {
-        PlantSystem.CollideLineLayer collide_layer = (PlantSystem.CollideLineLayer) layer;
-        PlantSystem.SortingLayerLine sorting_layer = layer;
+        PlantSystem.CollideLineLayer collide_layer = (PlantSystem.CollideLineLayer) sortingLayerForUnit;
+        PlantSystem.SortingLayerLine sorting_layer = sortingLayerForUnit;
 
         PlantSystem.UnitAdditionalSettings ua_settings = PlantSystem.UnitAdditionalSettings.CreateInstance(collide_layer, sorting_layer);
         ua_settings.sorting_order += _end_sprite.sortingOrder + 3;

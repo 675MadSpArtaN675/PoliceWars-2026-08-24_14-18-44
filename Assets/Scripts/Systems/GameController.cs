@@ -14,10 +14,12 @@ public class GameController : MonoBehaviour
     public delegate void onEventStart(GameStatus old_status, GameStatus new_status);
 
     public static GameController Instance { get; private set; }
+    public bool DebugMode = false;
 
     [SerializeField]
     [InspectorName("Player's team")]
     private Team _pl_team = Team.Policeman;
+
     public Team PlayerTeam { get => _pl_team; set => _pl_team = value; }
 
     [InspectorName("Prepare time")]

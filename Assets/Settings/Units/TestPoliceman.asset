@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestUnit
   health: 100
   damage: 25
+  speed: 0
   attack_type: 2
+  projectile: {fileID: 5280612411681890719, guid: 5a49ca3a2d105d849b89358861e7713e, type: 3}
+  start_timeout: 4
   attack_timeout: 2
   subattack_timeout: []
   distance: 15
   check_directions:
   - {x: 1, y: 0}
+  is_stop_when_attacking: 0

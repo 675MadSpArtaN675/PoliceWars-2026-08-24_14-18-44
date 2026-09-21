@@ -1,89 +1,80 @@
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 
-public class ProjectileSystem : MonoBehaviour
+public class ProjectileSystem : MonoBehaviour, IProjectileSystem
 {
     public static ProjectileSystem Instance { get; private set; }
 
-    [InspectorName("Bullet")]
-    public GameObject bullet_prefab = null;
+    [Serializable]
+    public struct ProjectileSubSystemInfo
+    {
+        [SerializeField]
+        public string Name;
 
-    private Queue<GameObject> _bullets_cache = new Queue<GameObject>();
+        [SerializeField]
+        public GameObject SubSystemObj;
+    }
+
+    public List<ProjectileSubSystemInfo> subSystems = new();
+    private Dictionary<string, IProjectileSystem> _sub_systems = new();
+    private string choosen_projectile_type;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
+        if (Instance == null) {
             Instance = this;
         }
     }
 
     private void Start()
     {
-        if (bullet_prefab.GetComponent<Projectile>() == null)
+        foreach (ProjectileSubSystemInfo subSystem in subSystems)
         {
-            throw new NullReferenceException("No projectile object in option");
+            if (subSystem.SubSystemObj?.GetComponent<Projectile>() != null)
+            {
+                string name = subSystem.Name?.Length > 0 ? subSystem.Name : subSystem.SubSystemObj.name;
+                _sub_systems.Add(name, new ProjectileSubSystem(subSystem.SubSystemObj));
+            }
         }
+    }
+    public void ChooseProjectile(string proj_type)
+    {
+        choosen_projectile_type = proj_type;
     }
 
     public void SpawnProjectile(BulletSettings settings)
     {
-        Debug.Log($"Count queue: {_bullets_cache.Count}. Input bullet team: {settings.OwnersTeam}");
-        if (_bullets_cache.Count > 0)
+        if (settings.ProjectileName?.Length > 0)
         {
-            GameObject _exited_object = _bullets_cache.Dequeue();
-            ProjectileConfigure(_exited_object, in settings);
-            Debug.Log($"Getting from cache. Count queue: {_bullets_cache.Count}");
-
-            _exited_object.SetActive(true);
+            ChooseProjectile(settings.ProjectileName);
         }
-        else
-        {
 
-            GameObject _exited_object = Instantiate(bullet_prefab, bullet_prefab.transform.position, Quaternion.Euler(Vector3.zero));
-            ProjectileConfigure(_exited_object, in settings);
-            _exited_object.SetActive(true);
-        }
+        _sub_systems.GetValueOrDefault(choosen_projectile_type, null)?.SpawnProjectile(settings);
     }
 
     public void DestroyProjectile(GameObject projectile_object)
     {
-        Debug.Log($"Destroying projectile: {projectile_object}");
-        Projectile _projectile = projectile_object.GetComponentInChildren<Projectile>();
-        Mover _mover = projectile_object.GetComponentInChildren<Mover>();
+        _sub_systems.GetValueOrDefault(choosen_projectile_type, null)?.DestroyProjectile(projectile_object);
+    }
 
-        if (_projectile != null) {
-            if (_mover != null)
-            {
-                _mover.MoveStop();
-            }
-
-            projectile_object.SetActive(false);
-
-            _bullets_cache.Enqueue(projectile_object);
+    public void AddSubsystem(IProjectileSystem system){
+        if (system is MonoBehaviour subsystem) {
+            _sub_systems.Add(subsystem.name, system);
         }
     }
 
-    protected void ProjectileConfigure(GameObject projectile_object, in BulletSettings settings)
+    public void RemoveSystem(string name)
     {
-        Debug.Log($"Configuring bullet for team {settings.OwnersTeam}: {settings.Damage}");
+        if (_sub_systems.ContainsKey(name))
+        {
+            _sub_systems.Remove(name);
+        }
+    }
 
-        Transform transform = projectile_object.GetComponent<Transform>();
-        Mover mover = projectile_object.GetComponent<Mover>();
-        Projectile _projectile_component = projectile_object.GetComponent<Projectile>();
-
-        transform.position = new Vector3(settings.SpawnPosition.x, settings.SpawnPosition.y, 0);
-
-        mover.Direction = settings.Direction;
-        mover.Speed = settings.Velocity;
-
-        _projectile_component.Damage = settings.Damage;
-        _projectile_component.Team = settings.OwnersTeam;
-        _projectile_component.SetOptions(settings.AdditionalSettings);
-
-        mover.ResetMove();
-        _projectile_component.ResetUnit();
+    public string[] GetSubSystemsByTitle()
+    {
+        return _sub_systems.Keys.ToArray();
     }
 }

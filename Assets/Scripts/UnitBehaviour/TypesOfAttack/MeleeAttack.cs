@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 public class MeleeAttack : AbstractAttack
 {
     protected override bool isEnableCaching => true;
+    protected Collider2D _check_collider;
 
     public MeleeAttack() : this(null, null) { }
 
@@ -38,7 +39,7 @@ public class MeleeAttack : AbstractAttack
     {
         Debug.Log($"Getted unit data: {_unit_data}");
         List<Vector2> _found_directions = new List<Vector2>();
-        if (_unit_data.check_directions != null) {
+        if (_unit_data.check_directions != null && checkEnemyHas()) {
             Debug.Log($"Checking directions. Dir count: {_unit_data.check_directions.Count}");
             foreach (Vector2 _direction in _unit_data.check_directions)
             {
@@ -76,6 +77,34 @@ public class MeleeAttack : AbstractAttack
 
         Debug.Log("Checking is finished");
         return _found_directions.ToArray();
+    }
+
+    protected RaycastHit2D[] checkEnemyRaycast(Vector2 direction_of_ray, Vector2 _direction)
+    {
+        RaycastHit2D[] scan_hit = Physics2D
+            .RaycastAll(direction_of_ray, _direction * _unit_data.distance, _unit_data.distance, 1 << _additional_settings.current_collide_id, 0, 4)
+            .Where((RaycastHit2D _hit) => IsValidEnemyTeam(in _hit))
+            .Where((RaycastHit2D _hit) => _hit.distance <= _unit_data.distance)
+            .ToArray();
+
+        return scan_hit;
+    }
+
+    protected bool checkEnemyHas()
+    {
+        ContactFilter2D filter = new ContactFilter2D() {layerMask = 1 << _additional_settings.current_collide_id};
+        List<Collider2D> _collider = new List<Collider2D>();
+
+        if (Physics2D.OverlapCircle(_unit_transformation.position, _unit_data.distance, filter, _collider) > 0)
+        {
+            List<Team> _enemy_teams = DamageSystem.Instance.Relationships.GetEnemyTeams(_unit_team);
+            return _collider.Where(
+                (Collider2D first) => first.GetComponentInParent<ITeamable>(true) != null &&
+                _enemy_teams.Contains(first.GetComponentInParent<ITeamable>(true).Team)
+            ).Count() > 0;
+        }
+
+        return false;
     }
 
 

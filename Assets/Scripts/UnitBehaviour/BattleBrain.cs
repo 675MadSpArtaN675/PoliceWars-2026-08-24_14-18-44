@@ -22,8 +22,9 @@ public class BattleBrain : MonoBehaviour, IGameUnit
     public PlantSystem.CollideLineLayer ColliderLayer { get => colliderLayer; set => colliderLayer = value; }
     public PlantSystem.UnitAdditionalSettings additionalSettings { get; set; }
 
+    [InspectorName("Unit data")]
     [SerializeField]
-    private UnitSettings _unit_data;
+    private UnitSettings unit_data;
 
     private AbstractAttack _attack_type;
 
@@ -33,10 +34,10 @@ public class BattleBrain : MonoBehaviour, IGameUnit
 
     private void Awake()
     {
-        if (_unit_data != null) {
-            Debug.Log($"Created unit data: {_unit_data}. Directions: {_unit_data.check_directions.Count}");
+        if (unit_data != null) {
+            Debug.Log($"Created unit data: {unit_data}. Directions: {unit_data.check_directions.Count}");
 
-            foreach (Vector2 _direction in _unit_data.check_directions)
+            foreach (Vector2 _direction in unit_data.check_directions)
             {
                 Debug.Log($"Found direction: {_direction}...");
             }
@@ -45,8 +46,13 @@ public class BattleBrain : MonoBehaviour, IGameUnit
 
     private void Start()
     {
+        if (GetComponent<Mover>() is Mover mover_component && mover_component.Speed != 0)
+        {
+            mover_component.Speed = unit_data?.speed ?? 0;
+        }
+
         SetOptionsByColliderLayer(ColliderLayer);
-        InitAttackType(_unit_data.attack_type);
+        InitAttackType(unit_data?.attack_type ?? TypeOfAttack.Empty);
     }
 
     public void SetOptionsByColliderLayer(PlantSystem.CollideLineLayer colliderLine)
@@ -66,15 +72,15 @@ public class BattleBrain : MonoBehaviour, IGameUnit
         switch (_attack)
         {
             case TypeOfAttack.Empty:
-                _attack_type = AbstractAttack.CreateEmpty(_unit_data, gameObject);
+                _attack_type = AbstractAttack.CreateEmpty(unit_data, gameObject);
                 break;
 
             case TypeOfAttack.Melee:
-                _attack_type = AbstractAttack.CreateAttackType<MeleeAttack>(_unit_data, gameObject);
+                _attack_type = AbstractAttack.CreateAttackType<MeleeAttack>(unit_data, gameObject);
                 break;
 
             case TypeOfAttack.Ranged:
-                _attack_type = AbstractAttack.CreateAttackType<GunnerAttack>(_unit_data, gameObject);
+                _attack_type = AbstractAttack.CreateAttackType<GunnerAttack>(unit_data, gameObject);
                 break;
 
             default:
@@ -88,7 +94,7 @@ public class BattleBrain : MonoBehaviour, IGameUnit
     {
         if (!_ready_to_actions)
         {
-            StartCoroutine(Wait(_unit_data.start_timeout));
+            StartCoroutine(Wait(unit_data.start_timeout));
             _ready_to_actions = true;
         }
 
@@ -106,14 +112,14 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             int attack_num = 1;
             foreach (Vector2 _direction in _directions_to_attack)
             {
-                Attack(_unit_data.damage, _direction);
+                Attack(unit_data.damage, _direction);
 
-                yield return new WaitForSecondsRealtime(_unit_data.GetSubAttackTimeout(attack_num));
+                yield return new WaitForSecondsRealtime(unit_data.GetSubAttackTimeout(attack_num));
 
                 attack_num++;
             }
 
-            yield return new WaitForSecondsRealtime(_unit_data.attack_timeout);
+            yield return new WaitForSecondsRealtime(unit_data.attack_timeout);
         }
 
         _is_enemy_found = false;

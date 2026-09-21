@@ -128,7 +128,7 @@ public class PlantSystem : MonoBehaviour
     {
         GameObject planted_unit = null;
         Debug.Log($"Planting on position: {position}. Slot: {_choosen_slot}. Is slot empty: {IsSlotEmpty(_choosen_slot)}.");
-        if (IsValidSlot(_choosen_slot) && !IsSlotEmpty(_choosen_slot)) {
+        if (IsValidSlot(_choosen_slot) && !IsSlotEmpty(_choosen_slot) && !_is_delete_mode) {
             Debug.Log($"Planting object on slot: {_choosen_slot}");
 
             planted_unit = Instantiate(GetUnit(_choosen_slot), position, Quaternion.Euler(Vector3.zero));
@@ -204,7 +204,7 @@ public class PlantSystem : MonoBehaviour
     public void ChooseSlot(int slot_index)
     {
         Debug.Log($"Choosing a slot with index: {slot_index}");
-        if (IsValidSlot(slot_index)) {
+        if (IsValidSlot(slot_index) && !_is_delete_mode) {
             _choosen_slot = slot_index;
             Debug.Log("Slot is choosen.");
             SetDeleteModeStatus(false);
