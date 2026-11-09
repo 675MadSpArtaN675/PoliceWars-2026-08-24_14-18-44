@@ -34,6 +34,9 @@ public class ProjectileSubSystem : IProjectileSystem
         {
             GameObject _exited_object = MonoBehaviour.Instantiate(bullet_prefab, bullet_prefab.transform.position, Quaternion.Euler(Vector3.zero));
             ProjectileConfigure(_exited_object, in settings);
+
+            _exited_object.transform.localScale *= settings.SizeModifier;
+
             _exited_object.SetActive(true);
         }
     }

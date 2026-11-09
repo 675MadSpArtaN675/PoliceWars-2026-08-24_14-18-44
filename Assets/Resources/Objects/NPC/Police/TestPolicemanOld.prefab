@@ -122,7 +122,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b22ebf28355ba4087de6cfb7548a72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunnerBehaviour
+  IDOfUnit: policeman_test_old
   _team: 1
+  IsBlockedAttack: 0
+  BulletSizeModificator: 0.3
   colliderLayer: 0
   unit_data: {fileID: 11400000, guid: ee3cfb7f46d275a438bd7b0a837486e6, type: 2}
 --- !u!114 &3703208355650564193

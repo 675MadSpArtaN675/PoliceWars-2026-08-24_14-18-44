@@ -230,4 +230,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mover
   Speed: 10
   CanStop: 0
+  CanChooseInMove: 0
   Direction: {x: 1, y: 0}
+  collideLineLayer: 0

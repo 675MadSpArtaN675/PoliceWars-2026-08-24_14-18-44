@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 public class Projectile: MonoBehaviour, IGameUnit
@@ -36,6 +36,7 @@ public class Projectile: MonoBehaviour, IGameUnit
     {
         SetOptionsByColliderLayer(ColliderLayer);
         Debug.Log($"Bullet damage: {Damage}. Team: {Team}");
+
     }
 
     private void FixedUpdate()
@@ -48,6 +49,7 @@ public class Projectile: MonoBehaviour, IGameUnit
     public void ReloadLayers()
     {
         PlantSystem.UnitAdditionalSettings.SetMasksForComponents(gameObject, additionalSettings);
+        _mover_comp.collideLineLayer = ColliderLayer;
     }
     public void SetOptionsByColliderLayer(PlantSystem.CollideLineLayer colliderLine)
     {

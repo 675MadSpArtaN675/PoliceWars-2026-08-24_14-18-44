@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+
 using UnityEngine;
 
 public class Ground : ObjectInLinePlacer
 {
-
     private int _index = 0;
     protected OnPlacerInitEvent OnLineInit;
 
@@ -33,6 +33,53 @@ public class Ground : ObjectInLinePlacer
             Debug.Log($"Removing line perfromer for placer: {name ?? "None"}");
             OnLineInit += _placer;
         }
+    }
+
+    public GameObject GetPlacerCell(int row, int col)
+    {
+        int count = _game_objects.Select(
+            (GameObject _obj) => _obj.GetComponentInChildren<ObjectInLinePlacer>()?.GetObjectsCount()
+        ).Max() ?? 0;
+
+        if (row >= 0 && col >= 0 && row < _game_objects.Count && col < count)
+        {
+            GameObject _line = _game_objects[row];
+
+            if (_line.GetComponentInChildren<ObjectInLinePlacer>(true) is ObjectInLinePlacer placer)
+            {
+                return placer[col];
+            }
+        }
+
+        throw new IndexOutOfRangeException();
+    }
+
+    public void SetPlacerCell(int row, int col, GameObject placer)
+    {
+        int count = _game_objects.Select(
+            (GameObject _obj) => _obj.GetComponentInChildren<ObjectInLinePlacer>()?.GetObjectsCount()
+        ).Max() ?? 0;
+
+        if (row >= 0 && col >= 0 && row < _game_objects.Count && col < count)
+        {
+            GameObject _line = _game_objects[row];
+
+            if (placer.GetComponentInChildren<ObjectInLinePlacer>(true) is ObjectInLinePlacer
+                && _line.GetComponentInChildren<ObjectInLinePlacer>(true) is ObjectInLinePlacer placer_)
+            {
+                placer_[col] = placer;
+            }
+
+            return;
+        }
+
+        throw new IndexOutOfRangeException();
+    }
+
+    public GameObject this[int row, int column]
+    {
+        get => GetPlacerCell(row, column);
+        set => SetPlacerCell(row, column, value);
     }
 
     protected override void Init()

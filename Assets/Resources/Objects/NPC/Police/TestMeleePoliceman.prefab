@@ -145,6 +145,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8944824024013618828, guid: 4e3824aefdcae9a43ab1208effd31040, type: 3}
+      propertyPath: IDOfUnit
+      value: melee_policeman_test
+      objectReference: {fileID: 0}
+    - target: {fileID: 8944824024013618828, guid: 4e3824aefdcae9a43ab1208effd31040, type: 3}
       propertyPath: unit_data
       value: 
       objectReference: {fileID: 11400000, guid: 96e1c51cf06672943a6c2f2068fa0044, type: 2}

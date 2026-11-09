@@ -11,4 +11,5 @@ public struct BulletSettings
 
     public float Velocity;
     public int Damage;
+    public float SizeModifier;
 }

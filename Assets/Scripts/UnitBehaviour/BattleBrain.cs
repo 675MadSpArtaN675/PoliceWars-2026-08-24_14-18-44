@@ -1,13 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class BattleBrain : MonoBehaviour, IGameUnit
 {
+    [InspectorName("ID")]
+    public string IDOfUnit;
+
+    private const float WAIT_BEFORE_EMPTY_CHECK = 0.6f;
     [SerializeField]
     private Team _team;
+
+    public bool IsBlockedAttack = false;
     public Team Team { get {
             return _team;
         }
@@ -15,6 +20,7 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             _team = value;
         }
     }
+    public float BulletSizeModificator = 0.3f;
 
     [SerializeField]
     private PlantSystem.CollideLineLayer colliderLayer = PlantSystem.CollideLineLayer.BankLayer;
@@ -31,6 +37,7 @@ public class BattleBrain : MonoBehaviour, IGameUnit
     private bool _is_attacking = true;
     private bool _is_enemy_found = false;
     private bool _ready_to_actions = false;
+    private Mover _mover_of_cheracter;
 
     private void Awake()
     {
@@ -42,17 +49,30 @@ public class BattleBrain : MonoBehaviour, IGameUnit
                 Debug.Log($"Found direction: {_direction}...");
             }
         }
+
+        _mover_of_cheracter = GetComponentInChildren<Mover>();
     }
 
     private void Start()
     {
-        if (GetComponent<Mover>() is Mover mover_component && mover_component.Speed != 0)
-        {
-            mover_component.Speed = unit_data?.speed ?? 0;
-        }
+        Reconfigure();
+    }
 
+    public void Reconfigure()
+    {
         SetOptionsByColliderLayer(ColliderLayer);
         InitAttackType(unit_data?.attack_type ?? TypeOfAttack.Empty);
+
+        if (_mover_of_cheracter != null)
+        {
+            _mover_of_cheracter.collideLineLayer = colliderLayer;
+
+            if (_mover_of_cheracter.Speed == 0) {
+                _mover_of_cheracter.Speed = unit_data.speed;
+            }
+
+            _mover_of_cheracter.ResetMove();
+        }
     }
 
     public void SetOptionsByColliderLayer(PlantSystem.CollideLineLayer colliderLine)
@@ -81,6 +101,11 @@ public class BattleBrain : MonoBehaviour, IGameUnit
 
             case TypeOfAttack.Ranged:
                 _attack_type = AbstractAttack.CreateAttackType<GunnerAttack>(unit_data, gameObject);
+                if (_attack_type is GunnerAttack attack)
+                {
+                    attack.SizeModifier = BulletSizeModificator;
+                }
+
                 break;
 
             default:
@@ -92,14 +117,20 @@ public class BattleBrain : MonoBehaviour, IGameUnit
 
     private void FixedUpdate()
     {
-        if (!_ready_to_actions)
-        {
-            StartCoroutine(Wait(unit_data.start_timeout));
-            _ready_to_actions = true;
-        }
+        if (!IsBlockedAttack) {
+            if (!_ready_to_actions)
+            {
+                StartCoroutine(Wait(unit_data.start_timeout));
+                _ready_to_actions = true;
+            }
 
-        if (_ready_to_actions && !_is_attacking) {
-            StartCoroutine(AttackCycle());
+            if (_ready_to_actions && !_is_attacking) {
+                StartCoroutine(AttackCycle());
+            }
+        }
+        else
+        {
+            _ready_to_actions = false;
         }
     }
 
@@ -120,6 +151,10 @@ public class BattleBrain : MonoBehaviour, IGameUnit
             }
 
             yield return new WaitForSecondsRealtime(unit_data.attack_timeout);
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(WAIT_BEFORE_EMPTY_CHECK);
         }
 
         _is_enemy_found = false;

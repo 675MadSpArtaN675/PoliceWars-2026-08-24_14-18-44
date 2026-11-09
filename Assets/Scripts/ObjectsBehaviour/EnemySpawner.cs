@@ -1,17 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
     public PlantSystem.CollideLineLayer colliderLayer = PlantSystem.CollideLineLayer.BankLayer;
     public Vector2 direction = new Vector2(-1, 0);
+    public Vector2 posInterval = new Vector2(0, 0);
     public bool IsMarkerPaint = false;
 
+    private System.Random _random;
     private Transform _transform;
 
     private void Start()
     {
-        IsMarkerPaint = GameController.Instance.DebugMode;
+        _random = new();
         _transform = GetComponent<Transform>();
+
+        loadMarkerStatus();
+    }
+
+    private void Update()
+    {
+        loadMarkerStatus();
+    }
+
+
+    protected void loadMarkerStatus()
+    {
+        IsMarkerPaint = GameController.Instance.DebugMode;
 
         if (!IsMarkerPaint) {
             SpriteRenderer[] _sprites = GetComponentsInChildren<SpriteRenderer>();
@@ -26,37 +42,89 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    public void Spawn(GameObject _obj)
+    public GameObject Spawn(GameObject _obj)
     {
         if (_obj.GetComponent<IGameUnit>() is IGameUnit) {
-            GameObject new_obj = Instantiate(_obj, _transform.position, Quaternion.Euler(0, 0, 0));
+            Debug.Log($"Spawn interval: {calculateInterval()}");
+            GameObject new_obj = Instantiate(_obj, _transform.position + calculateInterval(), Quaternion.Euler(0, 0, 0));
             new_obj.SetActive(true);
 
-            if (_obj.GetComponent<Mover>() is Mover _mover && _obj.GetComponent<BattleBrain>() is BattleBrain brain)
+            if (new_obj.GetComponentInChildren<Mover>() is Mover _mover && new_obj.GetComponentInChildren<BattleBrain>() is BattleBrain _brain)
             {
-                brain.ColliderLayer = colliderLayer;
-                _mover.Speed = 0;
+                _brain.ColliderLayer = colliderLayer;
                 _mover.Direction = direction;
+
+                _brain.Reconfigure();
             }
+
+            return new_obj;
         }
+
+        return null;
     }
 
-    public void SpawnAny(GameObject _obj, int count)
+    protected Vector3 calculateInterval()
     {
+        float start_x = 0, start_y = 0;
+        float end_x = posInterval.x, end_y = posInterval.y;
+
+        if (start_x == end_x && start_y == end_y)
+        {
+            return Vector3.zero;
+        }
+
+        if (start_x > end_x)
+        {
+            float temp = start_x;
+            start_x = end_x;
+            end_x = temp;
+        }
+
+        if (start_y > end_y)
+        {
+            float temp = start_y;
+            start_y = end_y;
+            end_y = temp;
+        }
+
+        return new Vector3(GenerateRandomfloat(start_x, end_x), GenerateRandomfloat(start_y, end_y), 0);
+    }
+
+    protected float GenerateRandomfloat(float start_, float end_)
+    {
+        float divider = 1000;
+        float _interval = (float) _random.Next((int) (Mathf.Floor(start_) * divider), (int) (Mathf.Ceil(end_) * divider)) / divider;
+
+        Debug.Log($"Spawner. Interval: {_interval}");
+        return _interval;
+    }
+
+    public List<GameObject> SpawnAny(GameObject _obj, int count)
+    {
+        List<GameObject> _result = new();
         for (uint i = 0; i < count; i++)
         {
-            Spawn(_obj);
+            GameObject unit = Spawn(_obj);
+
+            if (unit != null) {
+                _result.Add(unit);
+            }
         }
+
+        return _result;
     }
 
-    public void SpawnRandomCount(GameObject _obj, int min_count, int max_count)
+    public List<GameObject> SpawnRandomCount(GameObject _obj, int min_count, int max_count)
     {
+        List<GameObject> _result = new();
         if (min_count > 0) {
             System.Random random = new System.Random();
             int choosen_count = random.Next(min_count, max_count);
 
-            SpawnAny(_obj, choosen_count);
+            _result.AddRange(SpawnAny(_obj, choosen_count));
         }
+
+        return _result;
     }
 
     protected Vector2 RandomCoordinateInZone(Vector2 up_vec_1, Vector2 left_vec_2)

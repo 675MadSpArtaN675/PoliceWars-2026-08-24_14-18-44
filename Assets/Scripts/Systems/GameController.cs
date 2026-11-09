@@ -1,8 +1,9 @@
-using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
 
 public enum GameStatus
 {
+    Entering,
     Preparing,
     Playing,
     Win,
@@ -14,10 +15,12 @@ public class GameController : MonoBehaviour
     public delegate void onEventStart(GameStatus old_status, GameStatus new_status);
 
     public static GameController Instance { get; private set; }
-    public bool DebugMode = false;
+    public bool DebugMode;
+    public bool isGamePaused { get; private set; }
+    public bool IsSpawnBlocked = false;
 
-    [SerializeField]
     [InspectorName("Player's team")]
+    [SerializeField]
     private Team _pl_team = Team.Policeman;
 
     public Team PlayerTeam { get => _pl_team; set => _pl_team = value; }
@@ -28,22 +31,26 @@ public class GameController : MonoBehaviour
     [InspectorName("On game status changed")]
     public onEventStart onStatusChange;
 
-    public bool isGamePaused { get; private set; }
-
     private GameStatus _status;
 
-    private void Start()
+    private void Awake()
     {
         if (Instance == null) {
             Instance = this;
         }
     }
+
     public void StartGame()
     {
         GameStatus status = _status;
 
         if (PrepareTime > 0) {
             _status = GameStatus.Preparing;
+            onStatusChange?.Invoke(status, _status);
+
+            StartCoroutine(DelayToStartGame(status));
+
+            return;
         }
         else {
             _status = GameStatus.Playing;
@@ -52,8 +59,18 @@ public class GameController : MonoBehaviour
         onStatusChange?.Invoke(status, _status);
     }
 
+    protected IEnumerator DelayToStartGame(GameStatus old_status)
+    {
+        yield return new WaitForSecondsRealtime(PrepareTime);
+
+        _status = GameStatus.Playing;
+
+        onStatusChange?.Invoke(old_status, _status);
+    }
+
     public void WinGame()
     {
+        Debug.Log("Game won!");
         GameStatus status = _status;
         _status = GameStatus.Win;
 

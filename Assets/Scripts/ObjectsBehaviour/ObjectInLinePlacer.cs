@@ -33,8 +33,6 @@ public class ObjectInLinePlacer : MonoBehaviour
 
     private void Awake()
     {
-        IsPaintMarker = GameController.Instance?.DebugMode ?? IsPaintMarker;
-
         _game_objects = new List<GameObject>();
         _marker_sprite = GetComponentInChildren<SpriteRenderer>();
     }
@@ -42,15 +40,28 @@ public class ObjectInLinePlacer : MonoBehaviour
     private void Start()
     {
         Debug.Log($"Placer {gameObject.name}. It size: {CalculateSizeOfMarker(Axis.X)}x{CalculateSizeOfMarker(Axis.Y)}");
-        if (!IsPaintMarker)
-        {
-            _marker_sprite.enabled = false;
-        }
-
         Init();
 
         if (StartupInit) {
             UpdatePlaces();
+        }
+    }
+
+    private void Update()
+    {
+        loadMarkerStatus();
+    }
+
+    protected void loadMarkerStatus()
+    {
+        IsPaintMarker = GameController.Instance.DebugMode;
+        if (!IsPaintMarker)
+        {
+            _marker_sprite.enabled = false;
+        }
+        else
+        {
+            _marker_sprite.enabled = true;
         }
     }
 
@@ -180,6 +191,37 @@ public class ObjectInLinePlacer : MonoBehaviour
         return new Vector3[0];
     }
 
+    public virtual GameObject GetPlacer(int index)
+    {
+        if (index >= 0 && index < _game_objects.Count)
+        {
+            return _game_objects[index];
+        }
+
+        throw new IndexOutOfRangeException();
+    }
+
+    public virtual void SetPlacer(int index, GameObject placer)
+    {
+        if (index >= 0 && index < _game_objects.Count)
+        {
+            if (placer.GetComponentInChildren<HoverToPlace>() is HoverToPlace)
+            {
+                _game_objects[index] = placer;
+            }
+
+            return;
+        }
+
+        throw new IndexOutOfRangeException();
+    }
+
+    public GameObject this[int index]
+    {
+        get => GetPlacer(index);
+        set => SetPlacer(index, value);
+    }
+
     protected virtual void PrereadyPlacesData(out float first_side_len, out Axis axis, out Vector3 direction)
     {
         Debug.Log($"Choosen placer prefab: {PrefabToPlace?.name ?? "None"}");
@@ -265,15 +307,15 @@ public class ObjectInLinePlacer : MonoBehaviour
             Vector3 position = _marker_sprite.transform.position;
             Vector3 transform_pos;
 
+            float dx = side_len / 2;
             if (spawn_axis == Axis.X)
             {
-                transform_pos = new Vector3(CalculateSizeOfMarker(Axis.X) / 2 - side_len / 2, 0, 0);
+                transform_pos = new Vector3(CalculateSizeOfMarker(Axis.X) / 2 - dx, 0, 0);
             }
             else
             {
-                transform_pos = new Vector3(0, CalculateSizeOfMarker(Axis.Y) / 2 - side_len / 2, 0);
+                transform_pos = new Vector3(0, CalculateSizeOfMarker(Axis.Y) / 2 - dx, 0);
             }
-
 
             return position + transform_pos;
         }

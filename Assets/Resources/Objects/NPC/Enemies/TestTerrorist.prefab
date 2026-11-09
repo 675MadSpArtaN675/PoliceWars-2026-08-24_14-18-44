@@ -215,7 +215,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleBrain
   _team: 2
-  colliderLayer: 0
+  IsBlockedAttack: 0
+  BulletSizeModificator: 0.3
+  colliderLayer: 1
   unit_data: {fileID: 11400000, guid: 5883e9ea62c59a646b785c25ce649c0f, type: 2}
 --- !u!114 &7072283422579781236
 MonoBehaviour:
@@ -231,7 +233,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Mover
   Speed: 0
   CanStop: 1
-  Direction: {x: 1, y: 0}
+  CanChooseInMove: 0
+  Direction: {x: -1, y: 0}
+  collideLineLayer: 0
 --- !u!114 &6657351386394331003
 MonoBehaviour:
   m_ObjectHideFlags: 0

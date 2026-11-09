@@ -1,14 +1,20 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
 using Unity.Collections;
 using UnityEngine;
 
 public class PlantSystem : MonoBehaviour
 {
     public static float UnitCheckupDistance = 5;
+    public static float TimeToCheck = 4;
+
     public static Vector2 CheckupDirection = new Vector2(1, 0);
     public static PlantSystem Instance { private set; get; }
 
+    [Serializable]
     public enum CollideLineLayer
     {
         BankLayer,
@@ -19,6 +25,7 @@ public class PlantSystem : MonoBehaviour
         AttackLine_5
     }
 
+    [Serializable]
     public enum SortingLayerLine
     {
         Bank,
@@ -95,8 +102,11 @@ public class PlantSystem : MonoBehaviour
     [SerializeField]
     private bool _is_delete_mode = false;
 
+    private List<GameObject> _units_in_game;
     private GameObject[] _units = new GameObject[5];
     private int _choosen_slot = -1;
+
+    private GameObject _selected_exists_unit = null;
 
 
     [InspectorName("Slots of unit count")]
@@ -104,16 +114,16 @@ public class PlantSystem : MonoBehaviour
     public bool IsDeleteMode { get => _is_delete_mode; set => _is_delete_mode = true; }
     public int ChoosenUnitSlot { get => _choosen_slot; set => _choosen_slot = value; }
 
-    private void Start()
+    private void Awake()
     {
         Debug.Log("Initializing a plant system");
         if (Instance == null)
         {
             Instance = this;
         }
+        _units_in_game = new();
 
         SlotsRecreate();
-        SetUnitToSlot(0, Resources.Load<GameObject>("Objects/NPC/Police/TestPoliceman"));
     }
 
     public void SlotsRecreate()
@@ -124,11 +134,49 @@ public class PlantSystem : MonoBehaviour
         Array.Fill(_units, null);
     }
 
+    public bool IsReadyToPlace()
+    {
+        return !IsDeleteMode && _choosen_slot < 0;
+    }
+
+    public bool IsInPlace()
+    {
+        return !IsDeleteMode && IsValidSlot(_choosen_slot) && !IsSlotEmpty(_choosen_slot);
+    }
+
+    public bool IsClearGround()
+    {
+        return _units_in_game.Count > 0;
+    }
+
+    public void SelectExistsUnit(GameObject _unit)
+    {
+        if (_unit.GetComponentInChildren<ChoosableUnit>(true) != null)
+        {
+            _selected_exists_unit = _unit;
+        }
+    }
+
+    public bool IsHasSelectedUnit()
+    {
+        return _selected_exists_unit != null;
+    }
+
+    public GameObject GetSelectedUnit()
+    {
+        return _selected_exists_unit;
+    }
+
+    public void UnselectExistsUnit()
+    {
+        _selected_exists_unit = null;
+    }
+
     public GameObject PlaceUnit(Vector3 position, UnitAdditionalSettings? settings = null)
     {
         GameObject planted_unit = null;
         Debug.Log($"Planting on position: {position}. Slot: {_choosen_slot}. Is slot empty: {IsSlotEmpty(_choosen_slot)}.");
-        if (IsValidSlot(_choosen_slot) && !IsSlotEmpty(_choosen_slot) && !_is_delete_mode) {
+        if (IsInPlace()) {
             Debug.Log($"Planting object on slot: {_choosen_slot}");
 
             planted_unit = Instantiate(GetUnit(_choosen_slot), position, Quaternion.Euler(Vector3.zero));
@@ -142,6 +190,7 @@ public class PlantSystem : MonoBehaviour
             }
 
             planted_unit.SetActive(true);
+            _units_in_game.Add(planted_unit);
         }
 
         ClearChoose();
@@ -151,7 +200,7 @@ public class PlantSystem : MonoBehaviour
 
     public void DeleteUnit(GameObject _finded_unit)
     {
-        if (_is_delete_mode && _finded_unit != null) {
+        if (_is_delete_mode && !IsInPlace() && _finded_unit != null) {
             Mover _mover = _finded_unit.GetComponentInParent<Mover>();
 
             if ((_mover != null && _mover.IsNotMovable()) || _mover == null)
@@ -225,12 +274,34 @@ public class PlantSystem : MonoBehaviour
         if (IsValidSlot(slot_index))
         {
             ITeamable teamable = unit?.GetComponent<ITeamable>();
-            Debug.Log($"PlantSystem set unit to slot: {unit?.name ?? "None"}. Team: {teamable?.Team ?? Team.NoTeam}. Player team: {GameController.Instance.PlayerTeam}");
-            if (teamable?.Team == GameController.Instance.PlayerTeam)
+            GameController _contr = GameController.Instance;
+            Debug.Log($"PlantSystem set unit to slot: {unit?.name ?? "None"}. Condition: {_contr != null}. Team condition: {teamable?.Team == _contr?.PlayerTeam}. Team: {teamable?.Team ?? Team.NoTeam}. Player team: {_contr?.PlayerTeam ?? Team.NoTeam}");
+            if (_contr != null && teamable?.Team == _contr.PlayerTeam)
             {
                 _units[slot_index] = unit;
                 Debug.Log($"PlantSystem unit to slot: {_units[slot_index]?.name ?? "None"}.");
             }
+        }
+    }
+
+    public void SetNewUnitList(uint count_of_units, GameObject[] units_list)
+    {
+        if (count_of_units > 0) {
+            SlotsCount = count_of_units;
+            SlotsRecreate();
+        }
+
+        int division_between_count = (int) count_of_units - units_list.Length;
+
+        uint iters_count = count_of_units;
+        if (division_between_count > 0)
+        {
+            iters_count -= (uint) division_between_count;
+        }
+
+        for (int i = 0; i < iters_count; i++)
+        {
+            _units[i] = units_list[i];
         }
     }
 

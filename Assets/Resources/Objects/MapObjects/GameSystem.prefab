@@ -135,6 +135,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e308d1628484f3444b694571097b1161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGameControls
+--- !u!1 &1191584931044909129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7236910295098307450}
+  - component: {fileID: 4809331360914578963}
+  m_Layer: 0
+  m_Name: ScreenController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7236910295098307450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191584931044909129}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3743684763185331135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4809331360914578963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191584931044909129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0c8294ea2087e4a90dea768b1b34e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenResolutionController
+  scaleCoffsent: 1.15
+  GlobalResolution: {x: 1920, y: 1080}
+  GlobalSize: 6
+  CameraSlot: {fileID: 0}
 --- !u!1 &1571148158887581831
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,8 +230,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnController
   game_ground: {fileID: 0}
   game_spawner: {fileID: 3112946910279600797, guid: a1c64f9945025b347806581ae2941a40, type: 3}
+  posInterval: {x: 0, y: 0, z: 0}
   DistanceBetweenGroundAndSpawners: 5
-  IsSpawnerMarkersPaint: 0
 --- !u!114 &4783148520873391592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,6 +320,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5793236262308951146}
+  - {fileID: 7236910295098307450}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8127387471890283115
@@ -286,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25633285e38c134683df7a423547b74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSystemsInitializator
+  IsDebugMode: 0
   Ground: {fileID: 0}
   SpawnerPrefab: {fileID: 3112946910279600797, guid: a1c64f9945025b347806581ae2941a40, type: 3}
   PrepareTime: 0
@@ -388,6 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b63a7125dc3174a88cd957f13a390c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameController
+  DebugMode: 0
+  IsSpawnBlocked: 0
   _pl_team: 1
   PrepareTime: 0
 --- !u!1 &8499786820554667334

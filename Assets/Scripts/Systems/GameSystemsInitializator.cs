@@ -1,17 +1,25 @@
+using System;
 using UnityEngine;
 
 public class GameSystemsInitializator : MonoBehaviour
 {
+    public static GameSystemsInitializator Instance { get; private set; }
+
     public bool IsDebugMode = false;
     public GameObject Ground;
     public GameObject SpawnerPrefab;
 
     public uint PrepareTime;
+
     public uint UnitSlotsCount;
+    public GameObject[] StartUnits = new GameObject[0];
+
     public float DistanceGroundAndEnemySpawners;
 
     public Team PlayerTeam;
     public TeamsRelationships FractionsRelationships;
+
+    public Action OnInitEnded;
 
     protected GameController _game_controller;
     protected SpawnController _spawn_system;
@@ -28,6 +36,11 @@ public class GameSystemsInitializator : MonoBehaviour
         _damage_system = GetComponentInChildren<DamageSystem>();
         _plant_system = GetComponentInChildren<PlantSystem>();
         _projectile_system = GetComponentInChildren<ProjectileSystem>();
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
     }
 
     private void Start()
@@ -43,6 +56,8 @@ public class GameSystemsInitializator : MonoBehaviour
         ConfigurePlantSystem();
         ConfigureSpawnSystem();
         ConfigureProjectileSystem();
+
+        OnInitEnded?.Invoke();
     }
 
     protected virtual void ConfigureGameController()
@@ -57,7 +72,16 @@ public class GameSystemsInitializator : MonoBehaviour
     protected virtual void ConfigurePlantSystem()
     {
         if (_plant_system != null) {
-            _plant_system.SlotsCount = UnitSlotsCount;
+
+            if (StartUnits.Length > 0)
+            {
+                _plant_system.SetNewUnitList(UnitSlotsCount, StartUnits);
+            }
+            else
+            {
+                _plant_system.SlotsCount = UnitSlotsCount;
+                _plant_system.SlotsRecreate();
+            }
         }
     }
 

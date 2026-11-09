@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitSettings
   health: 200
   damage: 25
+  speed: 1
   attack_type: 1
+  projectile: {fileID: 0}
   start_timeout: 0
   attack_timeout: 10
   subattack_timeout: []

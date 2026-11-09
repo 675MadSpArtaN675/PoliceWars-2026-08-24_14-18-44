@@ -26,6 +26,7 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
 
     [InspectorName("Is blocked")]
     public bool IsBlocked;
+    public GameObject plantedUnit;
 
     private void Start()
     {
@@ -55,6 +56,16 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
         _cell_collider.size = _start_sprite.size;
     }
 
+    public bool IsCanPlace()
+    {
+        return IsBlocked || IsEmpty();
+    }
+
+    public bool IsEmpty()
+    {
+        return plantedUnit == null;
+    }
+
     public void PlaceUnit()
     {
         PlantSystem.CollideLineLayer collide_layer = (PlantSystem.CollideLineLayer) sortingLayerForUnit;
@@ -63,7 +74,21 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
         PlantSystem.UnitAdditionalSettings ua_settings = PlantSystem.UnitAdditionalSettings.CreateInstance(collide_layer, sorting_layer);
         ua_settings.sorting_order += _end_sprite.sortingOrder + 3;
 
-        PlantSystem.Instance?.PlaceUnit(_transform.position, ua_settings);
+        DestroyUnit();
+        plantedUnit = PlantSystem.Instance?.PlaceUnit(_transform.position, ua_settings);
+    }
+
+    public GameObject WhoPlaced()
+    {
+        return plantedUnit;
+    }
+
+    public void DestroyUnit()
+    {
+        if (plantedUnit != null) {
+            DeathSystem.Instance.DestroyUnit(plantedUnit);
+            plantedUnit = null;
+        }
     }
 
     protected SpriteRenderer GetSpriteRendererByName(string name, string[] accessed_names)
@@ -99,7 +124,7 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
 
     private void OnMouseEnter()
     {
-        if (PlantSystem.Instance.IsAnySlotChoosen() && !IsBlocked)
+        if (PlantSystem.Instance.IsAnySlotChoosen() && IsCanPlace())
         {
             _end_sprite.enabled = true;
         }
@@ -115,15 +140,27 @@ public class HoverToPlace : MonoBehaviour, IOnPlaceable
 
     private void OnMouseDown()
     {
-        if (!IsBlocked) {
+        if (IsCanPlace()) {
             Debug.Log("Press mouse...");
             Vector2 ray_check_start_position = new Vector2(_transform.position.x, _transform.position.y);
 
             Collider2D _hit = SearchNearestFriendlyUnit(ray_check_start_position);
 
             if (_is_entered) {
-                if (_hit == null) {
-                    PlaceUnit();
+                PlantSystem _system = PlantSystem.Instance;
+                if (_hit == null && _system != null) {
+                    if (!_system.IsDeleteMode && _system.IsInPlace()) {
+                        PlaceUnit();
+                    }
+                    else if (_system.IsHasSelectedUnit())
+                    {
+                        GameObject _unit = _system.GetSelectedUnit();
+
+                        if (_unit.GetComponentInChildren<Mover>(true) is Mover mover)
+                        {
+                            mover.MoveTo(transform.position);
+                        }
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ public class MapBorderDeleter : MonoBehaviour
 {
     [InspectorName("Check Interval")]
     public float check_interval = 2;
+    public bool IsMarkerPaint;
 
     private SpriteRenderer _sprite;
     private BoxCollider2D _collider;
@@ -14,6 +15,25 @@ public class MapBorderDeleter : MonoBehaviour
         _sprite = GetComponentInChildren<SpriteRenderer>();
 
         _collider.size = _sprite.size;
+        loadMarkerStatus();
+    }
+
+    private void Update()
+    {
+        loadMarkerStatus();
+    }
+
+    protected void loadMarkerStatus()
+    {
+        IsMarkerPaint = GameController.Instance?.DebugMode ?? IsMarkerPaint;
+        if (_sprite != null && !IsMarkerPaint)
+        {
+            _sprite.enabled = false;
+        }
+        else
+        {
+            _sprite.enabled = true;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

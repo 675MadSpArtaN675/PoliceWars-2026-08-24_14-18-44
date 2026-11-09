@@ -36,6 +36,7 @@ public class DeathSystem : MonoBehaviour
             GameObject _obj_to_destroy = (_unit as MonoBehaviour).gameObject;
             _obj_to_destroy.SetActive(false);
 
+            SpawnController.Instance?.DestroyElement(_obj_to_destroy);
             Destroy(_obj_to_destroy);
         }
     }

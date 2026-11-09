@@ -1,0 +1,62 @@
+#units_list {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#choosen_units_row {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+
+    flex-direction: row;
+    flex-wrap: no-wrap;
+
+    align-items: center;
+
+    padding: 3px;
+    padding-left: 5px;
+    gap: 3px;
+}
+
+#button_base {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+
+    width: 100px;
+    height: 65px;
+
+    padding: 5;
+
+    border-color: black;
+    border-radius: 8px;
+    border-width: 3px;
+}
+
+#base_of_button {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+
+    background-color: cyan;
+    border-color: black;
+    border-radius: 6px;
+    border-width: 3px;
+}
+
+#play_button {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: auto;
+
+    width: 150;
+    height: 50;
+
+    align-self: flex-end;
+    margin-right: 15;
+    margin-bottom: 15;
+}

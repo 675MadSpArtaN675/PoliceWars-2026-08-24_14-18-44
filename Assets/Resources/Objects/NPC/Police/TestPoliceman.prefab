@@ -149,6 +149,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8944824024013618828, guid: 4e3824aefdcae9a43ab1208effd31040, type: 3}
+      propertyPath: IDOfUnit
+      value: ranged_policeman_test
+      objectReference: {fileID: 0}
+    - target: {fileID: 8944824024013618828, guid: 4e3824aefdcae9a43ab1208effd31040, type: 3}
       propertyPath: unit_data
       value: 
       objectReference: {fileID: 11400000, guid: ee3cfb7f46d275a438bd7b0a837486e6, type: 2}

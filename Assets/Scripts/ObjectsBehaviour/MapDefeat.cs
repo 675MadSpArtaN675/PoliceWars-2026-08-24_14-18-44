@@ -9,18 +9,29 @@ public class MapPlayerDefeat : MonoBehaviour
 
     private void Start()
     {
-        IsMarkerPaint = GameController.Instance?.DebugMode ?? IsMarkerPaint;
-
         _sprite = GetComponentInChildren<SpriteRenderer>();
+        _collider = GetComponent<BoxCollider2D>();
 
+        _collider.size = _sprite.size;
+
+    }
+
+    private void Update()
+    {
+        loadMarkerStatus();
+    }
+
+    protected void loadMarkerStatus()
+    {
+        IsMarkerPaint = GameController.Instance?.DebugMode ?? IsMarkerPaint;
         if (_sprite != null && !IsMarkerPaint)
         {
             _sprite.enabled = false;
         }
-
-        _collider = GetComponent<BoxCollider2D>();
-
-        _collider.size = _sprite.size;
+        else
+        {
+            _sprite.enabled = true;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
